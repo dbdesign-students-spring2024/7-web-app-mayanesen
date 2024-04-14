@@ -35,7 +35,6 @@ sentry_sdk.init(
     # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
     integrations=[FlaskIntegration()],
-    traces_sample_rate=1.0,
     send_default_pii=True,
 )
 
@@ -63,7 +62,6 @@ except ConnectionFailure as e:
 
 # set up the routes
 
-
 @app.route("/")
 def home():
     """
@@ -79,7 +77,7 @@ def read():
     Route for GET requests to the read page.
     Displays some information for the user with links to other pages.
     """
-    docs = db.exampleapp.find({}).sort(
+    docs = db.movieapp.find({}).sort(
         "created_at", -1
     )  # sort in descending order of created_at timestamp
     return render_template("read.html", docs=docs)  # render the read template
@@ -100,12 +98,12 @@ def create_post():
     Route for POST requests to the create page.
     Accepts the form submission data for a new document and saves the document to the database.
     """
-    name = request.form["fname"]
-    message = request.form["fmessage"]
+    title = request.form["m_title"]
+    review = request.form["m_review"]
 
     # create a new document with the data the user entered
-    doc = {"name": name, "message": message, "created_at": datetime.datetime.utcnow()}
-    db.exampleapp.insert_one(doc)  # insert a new document
+    doc = {"title": title, "review": review, "created_at": datetime.datetime.utcnow()}
+    db.movieapp.insert_one(doc)  # insert a new document
 
     return redirect(
         url_for("read")
@@ -121,7 +119,7 @@ def edit(mongoid):
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be edited.
     """
-    doc = db.exampleapp.find_one({"_id": ObjectId(mongoid)})
+    doc = db.movieapp.find_one({"_id": ObjectId(mongoid)})
     return render_template(
         "edit.html", mongoid=mongoid, doc=doc
     )  # render the edit template
@@ -136,17 +134,17 @@ def edit_post(mongoid):
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be edited.
     """
-    name = request.form["fname"]
-    message = request.form["fmessage"]
+    title = request.form["m_title"]
+    review = request.form["m_review"]
 
     doc = {
         # "_id": ObjectId(mongoid),
-        "name": name,
-        "message": message,
+        "title": title,
+        "review": review,
         "created_at": datetime.datetime.utcnow(),
     }
 
-    db.exampleapp.update_one(
+    db.movieapp.update_one(
         {"_id": ObjectId(mongoid)}, {"$set": doc}  # match criteria
     )
 
@@ -164,7 +162,7 @@ def delete(mongoid):
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be deleted.
     """
-    db.exampleapp.delete_one({"_id": ObjectId(mongoid)})
+    db.movieapp.delete_one({"_id": ObjectId(mongoid)})
     return redirect(
         url_for("read")
     )  # tell the web browser to make a request for the /read route.

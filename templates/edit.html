@@ -3,12 +3,8 @@
 <p>Edit a record in the MongoDB database collection.</p>
 <form method="POST" action="{{ url_for('edit_post', mongoid=mongoid) }}">
   <p>
-    Your name:
-    <input type="text" id="fname" name="fname" value="{{doc.name}}" /><br />
-  </p>
-  <p>
-    Message:
-    <textarea id="fmessage" name="fmessage">{{doc.message}}</textarea>
+    Review:
+    <input type="text" id="m_review" name="m_review" value="{{doc.m_review}}" />
   </p>
   <p>
     <a href="{{ url_for('read')}}">Cancel</a>
