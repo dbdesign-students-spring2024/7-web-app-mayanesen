@@ -1,11 +1,13 @@
 {% extends 'base.html' %} {% block container %}
-<h2>Create</h2>
+<h2>Post a Recipe Review</h2>
 <p>Create a new record in the MongoDB database collection.</p>
 <form method="POST" action="{{ url_for('create_post') }}">
-  <p>Movie Title <input type="text" id="m_title" name="m_title" /><br /></p>
+  <p>Coffee Recipe
+    <input type="text" id="recipe_name" name="recipe_name" /><br />
+  </p>
   <p>
     Review:
-    <textarea type="text" id="m_review" name="m_review" placeholder="Share your review here..."></textarea>
+    <textarea type="text" id="review" name="review" placeholder="Share your review here..."></textarea>
   </p>
   <p>
     <a href="{{ url_for('read')}}">Cancel</a>

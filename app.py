@@ -77,7 +77,7 @@ def read():
     Route for GET requests to the read page.
     Displays some information for the user with links to other pages.
     """
-    docs = db.movieapp.find({}).sort(
+    docs = db.reviews.find({}).sort(
         "created_at", -1
     )  # sort in descending order of created_at timestamp
     return render_template("read.html", docs=docs)  # render the read template
@@ -98,12 +98,12 @@ def create_post():
     Route for POST requests to the create page.
     Accepts the form submission data for a new document and saves the document to the database.
     """
-    title = request.form["m_title"]
-    review = request.form["m_review"]
+    recipe_name = request.form["recipe_name"]
+    review = request.form["review"]
 
     # create a new document with the data the user entered
-    doc = {"title": title, "review": review, "created_at": datetime.datetime.utcnow()}
-    db.movieapp.insert_one(doc)  # insert a new document
+    doc = {"recipe_name": recipe_name, "review": review, "created_at": datetime.datetime.utcnow()}
+    db.reviews.insert_one(doc)  # insert a new document
 
     return redirect(
         url_for("read")
@@ -119,7 +119,7 @@ def edit(mongoid):
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be edited.
     """
-    doc = db.movieapp.find_one({"_id": ObjectId(mongoid)})
+    doc = db.reviews.find_one({"_id": ObjectId(mongoid)})
     return render_template(
         "edit.html", mongoid=mongoid, doc=doc
     )  # render the edit template
@@ -144,7 +144,7 @@ def edit_post(mongoid):
         "created_at": datetime.datetime.utcnow(),
     }
 
-    db.movieapp.update_one(
+    db.reviews.update_one(
         {"_id": ObjectId(mongoid)}, {"$set": doc}  # match criteria
     )
 
@@ -162,10 +162,64 @@ def delete(mongoid):
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be deleted.
     """
-    db.movieapp.delete_one({"_id": ObjectId(mongoid)})
+    db.reviews.delete_one({"_id": ObjectId(mongoid)})
     return redirect(
         url_for("read")
     )  # tell the web browser to make a request for the /read route.
+
+
+# simple search bar
+@app.route("/search")
+def search():
+    # Get the search query from the request URL
+    query = request.args.get("query")
+
+    # Perform the search operation (e.g., query MongoDB for matching records)
+    results = db.recipes.find({"$text": {"$search": query}})
+
+    # Render the search results template with the matching records
+    return render_template("search_results.html", results=results, query=query)
+
+@app.route("/create_recipe")
+def create_recipe():
+    """
+    Route for GET requests to the post_recipe page.
+    Displays a form users can fill out to create a new document.
+    """
+    return render_template("post_recipe.html")  # render the create template
+
+# posting recipes
+@app.route("/create_recipe", methods=["POST"])
+def post_recipe():
+    recipe = request.form["recipe"]
+    ingredients = request.form["ingredients"]
+    instructions = request.form["instructions"]
+    
+    new_recipe = {
+            # "_id": ObjectId(mongoid),
+            "recipe": recipe,
+            "ingredients": ingredients,
+            "instructions": instructions,
+            "created_at": datetime.datetime.utcnow(),
+        }
+
+    db.recipes.insert_one(new_recipe)
+
+    return redirect(
+        url_for("post_recipe")
+    ) 
+
+
+@app.route("/read_recipes")
+def read_recipes():
+    """
+    Route for GET requests to the read page.
+    Displays some information for the user with links to other pages.
+    """
+    docs = db.recipes.find({}).sort(
+        "created_at", -1
+    )  # sort in descending order of created_at timestamp
+    return render_template("read_recipes.html", docs=docs)  # render the read template
 
 
 @app.route("/webhook", methods=["POST"])

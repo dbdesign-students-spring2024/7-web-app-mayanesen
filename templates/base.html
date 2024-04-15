@@ -2,18 +2,20 @@
 <html>
 
 <head>
-  <title>Movie Mayhem! </title>
+  <title>Cafecito </title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 
 <body>
   <div class="container">
     <header>
-      <h1>Movie Mayhem!</h1>
+      <h1>Cafecito</h1>
       <p>
         <a href="{{ url_for('home')}}">Home</a> |
-        <a href="{{ url_for('read')}}">All posts</a> |
-        <a href="{{ url_for('create')}}">Create a post</a>
+        <a href="{{ url_for('read_recipes')}}">All Coffee Recipes</a> |
+        <a href="{{ url_for('post_recipe') }}">Post a Recipe</a> |
+        <a href="{{ url_for('read')}}">All Coffee Reviews</a> |
+        <a href="{{ url_for('create')}}">Post a Recipe Review</a>
       </p>
     </header>
     <main>{% block container %} {% endblock %}</main>
