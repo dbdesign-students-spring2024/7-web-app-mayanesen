@@ -16,11 +16,7 @@ Cafecito is an app where users can read and share coffee recipes.
 - The home page also has a search bar which allows you to search for recipes.
 
 
-tomorrow to do : 
-fix edit.html and routes for reviews
-<!--NEED TO CREATE EDIT template/route AND DELETE route FOR RECIPES -->
-    <a href="{{ url_for('edit', mongoid=doc._id) }}">Edit</a> |
-    <a href="{{ url_for('delete', mongoid=doc._id) }}">Delete</a>
+tomorrow to do :
 connect to i6 server?
 
 

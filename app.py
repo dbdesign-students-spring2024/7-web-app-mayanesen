@@ -111,7 +111,7 @@ def create_post():
     )  # tell the browser to make a request for the /read route
 
 
-@app.route("/edit/<mongoid>")
+@app.route("/edit_review/<mongoid>")
 def edit(mongoid):
     """
     Route for GET requests to the edit page.
@@ -127,7 +127,7 @@ def edit(mongoid):
     )  # render the edit template
 
 
-@app.route("/edit/<mongoid>", methods=["POST"])
+@app.route("/edit_review/<mongoid>", methods=["POST"])
 def edit_post(mongoid):
     """
     Route for POST requests to the edit page.
@@ -137,26 +137,60 @@ def edit_post(mongoid):
     mongoid (str): The MongoDB ObjectId of the record to be edited.
     """
 
-    recipe_name = request.form["recipe_name"]
     review = request.form["review"]
+
+    db.reviews.update_one(
+        {"_id": ObjectId(mongoid)},
+        {"$set": {"review": review}},
+    )
 
     review_doc = db.reviews.find_one({"_id": ObjectId(mongoid)})
     username = review_doc["username"]
 
-    doc = {
-        # "_id": ObjectId(mongoid),
-        "recipe_name": recipe_name,
-        "review": review,
-        "created_at": datetime.datetime.utcnow(),
-    }
+    return redirect(url_for("dashboard", username=username))
 
-    db.reviews.update_one(
-        {"_id": ObjectId(mongoid)}, {"$set": doc}  # match criteria
+@app.route("/edit_recipe/<mongoid>")
+def edit_recipe(mongoid):
+    recipe = db.recipes.find_one({"_id": ObjectId(mongoid)})
+    username = recipe["username"]
+    return render_template("edit_recipe.html", recipe=recipe, mongoid=mongoid, username=username)
+
+
+@app.route("/edit_recipe/<mongoid>", methods=["POST"])
+def edit_recipe_post(mongoid):
+    recipe = request.form["recipe"]
+    ingredients = request.form["ingredients"]
+    instructions = request.form["instructions"]
+
+    db.recipes.update_one(
+        {"_id": ObjectId(mongoid)},
+        {"$set": {"recipe": recipe, "ingredients": ingredients, "instructions": instructions}},
     )
 
+    recipe_doc = db.recipes.find_one({"_id": ObjectId(mongoid)})
+    username = recipe_doc["username"]
+
+    return redirect(url_for("dashboard", username=username))
+
+
+
+@app.route("/delete_recipe/<mongoid>")
+def delete_recipe(mongoid):
+    """
+    Route for GET requests to the delete page.
+    Deletes the specified record from the database, and then redirects the browser to the read page.
+
+    Parameters:
+    mongoid (str): The MongoDB ObjectId of the record to be deleted.
+    """
+    recipe= db.recipes.find_one({"_id": ObjectId(mongoid)})
+    username = recipe["username"]
+
+    db.recipes.delete_one({"_id": ObjectId(mongoid)})
+
     return redirect(
-        url_for("dashboard", username=username)
-    ) 
+        url_for("dashboard", username = username)
+    )  # tell the web browser to make a request for the /read route.
 
 
 @app.route("/delete/<mongoid>")
