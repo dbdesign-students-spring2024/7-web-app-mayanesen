@@ -2,7 +2,10 @@
 <h2>Post a Recipe Review</h2>
 <p>Create a new record in the MongoDB database collection.</p>
 <form method="POST" action="{{ url_for('create_post') }}">
-  <p>Coffee Recipe
+  <p>Username:
+    <input type="text" id="username" name="username" /><br />
+  </p>
+  <p>Coffee Recipe:
     <input type="text" id="recipe_name" name="recipe_name" /><br />
   </p>
   <p>

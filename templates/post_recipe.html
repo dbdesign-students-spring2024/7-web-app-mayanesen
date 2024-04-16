@@ -1,9 +1,11 @@
-<!-- post_recipe.html -->
 {% extends 'base.html' %} {% block container %}
 <h2>Post a Recipe</h2>
 <p>Create a new record in the MongoDB database collection.</p>
 <form method="POST" action="{{ url_for('create_recipe') }}">
-    <p>Coffee Recipe
+    <p>Username:
+        <input type="text" id="username" name="username" /><br />
+    </p>
+    <p>Coffee Recipe:
         <input type="text" id="recipe" name="recipe" /><br />
     </p>
     <p>

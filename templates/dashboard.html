@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<h2>Welcome to Your Dashboard, {{ username }}!</h2>
+
+<div class="section">
+    <h3>Your Reviews</h3>
+    <ul class="recipe-list">
+        {% for review in user_reviews %}
+        <li class="recipe-item">
+            <div class="recipe-info">
+                <h4>{{ review.recipe_name }}</h4>
+                <p>{{ review.review }}</p>
+            </div>
+            <!-- Edit and delete links -->
+            <div class="recipe-actions">
+                <a href="{{ url_for('edit', mongoid=review._id) }}">Edit</a> |
+                <a href="{{ url_for('delete', mongoid=review._id) }}">Delete</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="section">
+    <h3>Your Recipes</h3>
+    <ul class="recipe-list">
+        {% for recipe in user_recipes %}
+        <li class="recipe-item">
+            <div class="recipe-info">
+                <h4>{{ recipe.recipe }}</h4>
+                <p>{{ recipe.ingredients }}</p>
+                <p>{{ recipe.instructions }}</p>
+            </div>
+            <!-- Edit and delete links -->
+            <div class="recipe-actions">
+                <a href="{{ url_for('edit', mongoid=recipe._id) }}">Edit</a> |
+                <a href="{{ url_for('delete', mongoid=recipe._id) }}">Delete</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="section">
+    <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+{% endblock %}

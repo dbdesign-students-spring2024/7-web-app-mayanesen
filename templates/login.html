@@ -1,0 +1,24 @@
+{% extends 'base.html' %} {% block container %}
+<h2>Log in</h2>
+<p>Log in as a Cafecito member!</p>
+<form method="POST" action="{{ url_for('login') }}">
+    <p>Username:
+        <input type="text" id="username" name="username" /><br />
+    </p>
+    <p>
+        Password:
+        <textarea type="text" id="password" name="password" placeholder="Enter your password.."></textarea>
+    </p>
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <p>
+        <a href="{{ url_for('home')}}">Cancel</a>
+        <input type="submit" name="login-btn" value="Log in" />
+    </p>
+    <p>Don't have an account? Sign up here:
+        <a href="{{ url_for('signup')}}">Sign up</a>
+    </p>
+</form>
+{% endblock %}

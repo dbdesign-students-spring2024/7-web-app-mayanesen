@@ -3,14 +3,10 @@
 {% block container %}
 <h2>Welcome!</h2>
 {% include 'search.html' %}
-<p>Welcome to Cafecito! This is the home page.
-    Here are also a few links to example pages you might find interesting.
-<ul>
-    <li><a href="{{ url_for('read')}}">a page that displays information pulled from a MongoDB database collection</a>
-    </li>
-    <li><a href="{{ url_for('create')}}">a page with a form you can submit to create a new record in a MongoDB
-            collection</a></li>
-</ul>
+<p>Welcome to Cafecito!
+    Here on Cafecito, we love coffee! We want to share recipes with each other to have the best coffees, any time and
+    any day. Try new flavors or maybe something more classic! You can even share your own recipe! Join the community in
+    having a cafecito!
 </p>
 
 {% endblock %}

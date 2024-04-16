@@ -2,16 +2,23 @@
 
 {% block container %}
 <h2>All Coffee Recipes</h2>
-<p>This page shows information pulled from a MongoDB database collection.</p>
+
+<a href="{{ url_for('post_recipe') }}">Post a Recipe here!</a>
+
+<p>Check out all coffee recipes here! Try them out or post your own!</p>
+
+{% if message %}
+<p>
+<h3>{{ message }}</h3>
+</p>
+{% endif %}
 
 {% for doc in docs %}
 <div>
     <hr class="solid">
     <p class="post">
-        {{ doc.recipe }} posted at {{ doc.created_at.strftime("%H:%M on %d %B %Y") }}
-        <br />
-        <a href="{{ url_for('edit', mongoid=doc._id) }}">Edit</a> |
-        <a href="{{ url_for('delete', mongoid=doc._id) }}">Delete</a>
+    <h5>{{ doc.recipe }}</h5>
+    by {{doc.username}}
     </p>
     <p> Ingredients:
         {{ doc.ingredients }}
@@ -21,4 +28,5 @@
     </p>
 </div>
 {% endfor %}
+<a href="{{ url_for('home') }}">Return to Home</a>
 {% endblock %}

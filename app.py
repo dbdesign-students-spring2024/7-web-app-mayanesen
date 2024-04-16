@@ -98,11 +98,12 @@ def create_post():
     Route for POST requests to the create page.
     Accepts the form submission data for a new document and saves the document to the database.
     """
+    username = request.form["username"]
     recipe_name = request.form["recipe_name"]
     review = request.form["review"]
 
     # create a new document with the data the user entered
-    doc = {"recipe_name": recipe_name, "review": review, "created_at": datetime.datetime.utcnow()}
+    doc = {"username": username, "recipe_name": recipe_name, "review": review, "created_at": datetime.datetime.utcnow()}
     db.reviews.insert_one(doc)  # insert a new document
 
     return redirect(
@@ -120,8 +121,9 @@ def edit(mongoid):
     mongoid (str): The MongoDB ObjectId of the record to be edited.
     """
     doc = db.reviews.find_one({"_id": ObjectId(mongoid)})
+    username = doc["username"]
     return render_template(
-        "edit.html", mongoid=mongoid, doc=doc
+        "edit.html", mongoid=mongoid, doc=doc, username = username
     )  # render the edit template
 
 
@@ -134,12 +136,16 @@ def edit_post(mongoid):
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be edited.
     """
-    title = request.form["m_title"]
-    review = request.form["m_review"]
+
+    recipe_name = request.form["recipe_name"]
+    review = request.form["review"]
+
+    review_doc = db.reviews.find_one({"_id": ObjectId(mongoid)})
+    username = review_doc["username"]
 
     doc = {
         # "_id": ObjectId(mongoid),
-        "title": title,
+        "recipe_name": recipe_name,
         "review": review,
         "created_at": datetime.datetime.utcnow(),
     }
@@ -149,8 +155,8 @@ def edit_post(mongoid):
     )
 
     return redirect(
-        url_for("read")
-    )  # tell the browser to make a request for the /read route
+        url_for("dashboard", username=username)
+    ) 
 
 
 @app.route("/delete/<mongoid>")
@@ -162,23 +168,27 @@ def delete(mongoid):
     Parameters:
     mongoid (str): The MongoDB ObjectId of the record to be deleted.
     """
+    review= db.reviews.find_one({"_id": ObjectId(mongoid)})
+    username = review["username"]
+
     db.reviews.delete_one({"_id": ObjectId(mongoid)})
+
     return redirect(
-        url_for("read")
+        url_for("dashboard", username = username)
     )  # tell the web browser to make a request for the /read route.
 
-
-# simple search bar
 @app.route("/search")
 def search():
-    # Get the search query from the request URL
     query = request.args.get("query")
 
-    # Perform the search operation (e.g., query MongoDB for matching records)
+    db.recipes.create_index([("recipe", "text"), ("ingredients", "text"), ("instructions", "text")])
     results = db.recipes.find({"$text": {"$search": query}})
 
-    # Render the search results template with the matching records
-    return render_template("search_results.html", results=results, query=query)
+    if db.recipes.count_documents({"$text": {"$search": query}}) > 0:
+        return render_template("read_recipes.html", docs=results)
+    else:
+        return render_template("read_recipes.html", message="No recipes found for the search query: '{}'".format(query))
+    
 
 @app.route("/create_recipe")
 def create_recipe():
@@ -191,12 +201,14 @@ def create_recipe():
 # posting recipes
 @app.route("/create_recipe", methods=["POST"])
 def post_recipe():
+    username = request.form["username"]
     recipe = request.form["recipe"]
     ingredients = request.form["ingredients"]
     instructions = request.form["instructions"]
     
     new_recipe = {
             # "_id": ObjectId(mongoid),
+            "username": username,
             "recipe": recipe,
             "ingredients": ingredients,
             "instructions": instructions,
@@ -209,17 +221,77 @@ def post_recipe():
         url_for("post_recipe")
     ) 
 
-
 @app.route("/read_recipes")
 def read_recipes():
     """
-    Route for GET requests to the read page.
+    Route for GET requests to the read page. = specifically for recipes.
     Displays some information for the user with links to other pages.
     """
-    docs = db.recipes.find({}).sort(
-        "created_at", -1
-    )  # sort in descending order of created_at timestamp
+    docs = db.recipes.find({}).sort("created_at", -1)  # sort in descending order of created_at timestamp
     return render_template("read_recipes.html", docs=docs)  # render the read template
+
+@app.route("/login")
+def login():
+    return render_template("login.html")
+
+@app.route("/login", methods=["POST"])
+def login_form():
+    username = request.form["username"]
+    password = request.form["password"]
+
+    user = db.users.find_one({"username": username})
+    if user:
+        if user["password"] == password:
+            return redirect(url_for("dashboard", username=username))
+        else:
+            error = "Incorrect password. Please try again."
+            return render_template("login.html", error=error)
+    else:
+        error = "Username does not exist. Please try again or sign up."
+        return render_template("login.html", error=error)
+
+
+@app.route("/signup")
+def signup():
+    return render_template("signup.html")
+
+@app.route("/signup", methods=["POST"])
+def signup_form():
+    username = request.form["username"]
+    password = request.form["password"]
+
+    existing_user = db.users.find_one({"username": username})
+    if existing_user:
+        error = "Username already exists. Please choose a different username."
+        return render_template("signup.html", error=error)
+
+    new_user = {
+        "username": username,
+        "password": password,
+    }
+
+    db.users.insert_one(new_user)
+
+    return redirect(url_for("login"))
+
+
+@app.route("/logout", methods=["GET", "POST"])
+def logout():
+    if request.method == "POST":
+        return redirect(url_for("home"))
+    else:
+        return render_template("logout.html")
+
+
+@app.route("/dashboard/<username>")
+def dashboard(username):
+    user_reviews = db.reviews.find({"username": username})
+    user_recipes = db.recipes.find({"username": username})
+    return render_template("dashboard.html", username=username, user_reviews=user_reviews, user_recipes=user_recipes)
+
+@app.route("/dashboard/<username>", methods=["POST"])
+def dashboard_view(username):
+    return redirect(url_for("dashboard", username=username))
 
 
 @app.route("/webhook", methods=["POST"])

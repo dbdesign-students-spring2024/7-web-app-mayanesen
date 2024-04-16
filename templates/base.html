@@ -12,10 +12,9 @@
       <h1>Cafecito</h1>
       <p>
         <a href="{{ url_for('home')}}">Home</a> |
-        <a href="{{ url_for('read_recipes')}}">All Coffee Recipes</a> |
-        <a href="{{ url_for('post_recipe') }}">Post a Recipe</a> |
-        <a href="{{ url_for('read')}}">All Coffee Reviews</a> |
-        <a href="{{ url_for('create')}}">Post a Recipe Review</a>
+        <a href="{{ url_for('read_recipes')}}">Coffee Recipes</a> |
+        <a href="{{ url_for('read')}}">Coffee Reviews</a> |
+        <a href="{{ url_for('login')}}">Log in</a>
       </p>
     </header>
     <main>{% block container %} {% endblock %}</main>
