@@ -2,7 +2,7 @@
 {% block container %}
 <h2>Logout</h2>
 <p>Are you sure you want to logout?</p>
-<form method="POST" action="{{ url_for('logout') }}">
+<form method="POST" action="{{ url_for('logout_post') }}">
     <input type="submit" name="logout-btn" value="Logout" />
 </form>
 {% endblock %}

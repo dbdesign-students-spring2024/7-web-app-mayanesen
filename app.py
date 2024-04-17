@@ -308,13 +308,13 @@ def signup_form():
 
     return redirect(url_for("login"))
 
-
-@app.route("/logout", methods=["GET", "POST"])
+@app.route("/logout")
 def logout():
-    if request.method == "POST":
-        return redirect(url_for("home"))
-    else:
-        return render_template("logout.html")
+    return render_template("logout.html")
+
+@app.route("/logout", methods=["POST"])
+def logout_post():
+    return redirect(url_for("home"))
 
 
 @app.route("/dashboard/<username>")
