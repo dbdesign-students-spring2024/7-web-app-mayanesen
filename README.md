@@ -6,7 +6,8 @@ by Maya Nesen
 
 My web app is called "Cafecito". 
 
-[Deployed copy of my web app](http://127.0.0.1:5000)
+[Deployed copy of my web app MongoDB Atlas](http://127.0.0.1:5000)
+[Deployed copy of my web app Courant i6](https://i6.cims.nyu.edu/~mn2405/7-web-app-mayanesen/flask.cgi)
 
 Cafecito is an app where users can read and share coffee recipes. 
 - The home page contains a "Home" button to return to it, "Coffee Recipes" page to see all the recipes posted, "Coffee Reviews" for reviews of those recipes, and "Log in" to sign into your account.
